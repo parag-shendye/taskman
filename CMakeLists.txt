@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.16)
+project(TaskMan)
+add_subdirectory(Walnut)
+file(GLOB SOURCES "src/*.cpp")
+add_executable(${PROJECT_NAME} ${SOURCES})
+set(Headers PATH ${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_NAME} ${Headers})
+target_link_libraries(${PROJECT_NAME} PUBLIC walnut)
