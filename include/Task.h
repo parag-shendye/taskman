@@ -13,6 +13,6 @@ struct Task
     Status m_status;
     std::string m_description;
     Importance m_importance;
-    std::vector<const Task&> m_tasks;    
+    std::vector<Task> m_tasks;    
     Datetime m_datetime;
 };
