@@ -16,3 +16,11 @@ struct Task
     std::vector<Task> m_tasks;    
     Datetime m_datetime;
 };
+
+struct CreateTaskModal {
+
+    bool isOpen = false;
+    char headingText[128] = "";
+    char descriptionText[512] = "";
+    int importanceSelection = -1;
+};

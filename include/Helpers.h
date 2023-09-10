@@ -1,9 +1,14 @@
+#include <iostream>
+#include <string>
 #include <Walnut/Application.h>
+#include <Task.h>
 
 namespace Helpers
 {
-    void showCreateForm(bool* poe);
-    static void ShowExampleAppPropertyEditor(bool* p_open);
+    CreateTaskModal modal;
+    void showCreateForm(bool *poe);
+    static void ShowCrudWindow(bool *p_open, CreateTaskModal &modal);
+    static void ShowExampleAppLog(bool *p_open);
     static void showFullWindows()
     {
         static bool use_work_area = true;
@@ -34,7 +39,8 @@ namespace Helpers
                     // {
                     //     Helpers::showCreateForm(&p_open);
                     // }
-                    ShowExampleAppPropertyEditor(&p_open);
+                    ImGui::NewLine();
+                    ShowCrudWindow(&p_open, modal);
                     ImGui::EndTabItem();
                 }
                 ImGui::EndTabBar();
@@ -42,107 +48,40 @@ namespace Helpers
         }
         ImGui::End();
     }
-static void ShowPlaceholderObject(const char* prefix, int uid)
-{
-    // Use object uid as identifier. Most commonly you could also use the object pointer as a base ID.
-    ImGui::PushID(uid);
-
-    // Text and Tree nodes are less high than framed widgets, using AlignTextToFramePadding() we add vertical spacing to make the tree lines equal high.
-    ImGui::TableNextRow();
-    ImGui::TableSetColumnIndex(0);
-    ImGui::AlignTextToFramePadding();
-    
-    bool node_open = ImGui::TreeNode("Object", "%s_%u", prefix, uid);
-    // bool node_open = ImGui::Button("Object");
-    ImGui::TableSetColumnIndex(1);
-
-    if (node_open)
+    static void ShowCrudWindow(bool *open, CreateTaskModal &modal)
     {
-        char heading [128];
-        char text [2048];
-        ImGui::TableSetColumnIndex(1);
-        ImGui::SameLine();
-        ImGui::Text("Task Name: ");
-        ImGui::InputText("heading", heading,IM_ARRAYSIZE(heading));
-        ImGui::NewLine();
-        ImGui::InputTextMultiline("user-input", text,IM_ARRAYSIZE(text),ImVec2(-FLT_MIN, 0.0f));
-        ImGui::NewLine();
-        ImGui::Button("save", ImVec2(-FLT_MIN, 0.0f));
-                // if (i >= 5)
-                //     ImGui::InputFloat("##value", &placeholder_members[i], 1.0f);
-                // else
-                //     ImGui::DragFloat("##value", &placeholder_members[i], 0.01f);
-                ImGui::NextColumn();
-        // for (int i = 0; i < 8; i++)
-        // {
-        //     ImGui::PushID(i); // Use field index as identifier.
-        //     if (i < 2)
-        //     {
-        //         ShowPlaceholderObject("Child", 424242);
-        //     }
-        //     else
-        //     {
-        //         // Here we use a TreeNode to highlight on hover (we could use e.g. Selectable as well)
-        //         ImGui::TableNextRow();
-        //         ImGui::TableSetColumnIndex(0);
-        //         ImGui::AlignTextToFramePadding();
-        //         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet;
-        //         ImGui::TreeNodeEx("Field", flags, "Field_%d", i);
-
-        //         ImGui::TableSetColumnIndex(1);
-        //         ImGui::SetNextItemWidth(-FLT_MIN);
-        //         // if (i >= 5)
-        //         //     ImGui::InputFloat("##value", &placeholder_members[i], 1.0f);
-        //         // else
-        //         //     ImGui::DragFloat("##value", &placeholder_members[i], 0.01f);
-        //         ImGui::NextColumn();
-        //     }
-        //     ImGui::PopID();
-        // }
-        ImGui::TreePop();
-    }
-    ImGui::PopID();
-}
-    // Demonstrate create a simple property editor.
-static void ShowExampleAppPropertyEditor(bool* p_open)
-{
-    ImGui::SetNextWindowSize(ImVec2(430, 450), ImGuiCond_FirstUseEver);
-    if (!ImGui::Begin("Example: Property editor", p_open))
-    {
-        ImGui::End();
-        return;
-    }
-    
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
-    if (ImGui::BeginTable("split", 2, ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Resizable))
-    {
-        // Iterate placeholder objects (all the same data)
-        const char* objs[] = {"Create", "Remove", "Update", "Delete"};
-        for (int obj_i = 0; obj_i < 4; obj_i++)
+        if (*open)
         {
-            ShowPlaceholderObject(objs[obj_i], obj_i);
-            //ImGui::Separator();
-        }
-        ImGui::EndTable();
-    }
-    ImGui::PopStyleVar();
-    ImGui::End();
-}
-void showCreateForm(bool *p_open)
-{
-    if (ImGui::Begin("Create Task", p_open))
-    {
-        ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
-        if (ImGui::BeginMenuBar())
-        {
-            if (ImGui::BeginMenu("File"))
+            if (ImGui::Button("Create"))
             {
-                if (ImGui::MenuItem("Close"))
-                    *p_open = false;
-                ImGui::EndMenu();
+                modal.isOpen = true;
             }
-            ImGui::EndMenuBar();
+            if (modal.isOpen)
+            {
+                ImGui::OpenPopup(("Create Task"));
+            }
+            if (ImGui::BeginPopupModal("Create Task"))
+            {
+                ImGui::InputText("Heading", modal.headingText, 1024);
+                ImGui::SameLine();
+                ImGui::RadioButton("Urgent", &modal.importanceSelection, 0);
+                ImGui::SameLine();
+                ImGui::RadioButton("Important", &modal.importanceSelection, 1);
+                ImGui::SameLine();
+                ImGui::RadioButton("Free time", &modal.importanceSelection, 2);
+                ImGui::InputTextMultiline("Description", modal.descriptionText, 1024);
+
+                if (ImGui::Button("OK"))
+                {
+                    // Close the modal when OK is pressed
+                    std::cout << modal.headingText << std::endl;
+                    std::cout << modal.descriptionText << std::endl;
+                    ImGui::CloseCurrentPopup();
+                    modal.isOpen = false;
+                }
+
+                ImGui::EndPopup();
+            }
         }
     }
-}
 } // namespace Helpers
