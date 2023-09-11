@@ -5,7 +5,6 @@
 #include <vector>
 #include <chrono>
 
-
 using namespace Utils;
 
 struct Task
@@ -13,11 +12,12 @@ struct Task
     Status m_status;
     std::string m_description;
     Importance m_importance;
-    std::vector<Task> m_tasks;    
+    std::vector<Task> m_tasks;
     Datetime m_datetime;
 };
 
-struct CreateTaskModal {
+struct CreateTaskModal
+{
 
     bool isOpen = false;
     char headingText[128] = "";

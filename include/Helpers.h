@@ -40,7 +40,8 @@ namespace Helpers
                     {
                         if (ImGui::BeginMenu("File"))
                         {
-                            if (ImGui::MenuItem("Close")){
+                            if (ImGui::MenuItem("Close"))
+                            {
                                 p_open = false;
                             }
                             ImGui::EndMenu();
@@ -56,10 +57,10 @@ namespace Helpers
                             char label[128];
                             sprintf(label, "Task %d", i);
                             if (ImGui::Selectable(label, selected == i))
-                                {
-                                    selected = i;
-                                    openTaskPopup = true;
-                                }
+                            {
+                                selected = i;
+                                openTaskPopup = true;
+                            }
                         }
                         ImGui::EndChild();
                     }
@@ -70,8 +71,8 @@ namespace Helpers
                     }
                     if (ImGui::BeginPopup("Task Description Popup"))
                     {
-                        //TODO: here make the query
-                        std::string description = "kdfksdfkdsmfmsdkmf_"+ std::to_string(selected);
+                        // TODO: here make the query
+                        std::string description = "kdfksdfkdsmfmsdkmf_" + std::to_string(selected);
                         ImGui::Text("Task Description:");
                         ImGui::TextWrapped("%s", description.c_str());
                         if (ImGui::Button("OK"))
@@ -120,7 +121,7 @@ namespace Helpers
                     std::cout << modal.descriptionText << std::endl;
                     ImGui::CloseCurrentPopup();
                     modal.isOpen = false;
-                }                
+                }
 
                 ImGui::EndPopup();
             }

@@ -6,22 +6,21 @@
 class ExampleLayer : public Walnut::Layer
 {
 public:
-    virtual void OnUIRender() override
-    {
-        Helpers::showFullWindows();
-    }
- 
+	virtual void OnUIRender() override
+	{
+		Helpers::showFullWindows();
+	}
 };
 
-Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
+Walnut::Application *Walnut::CreateApplication(int argc, char **argv)
 {
 	Walnut::ApplicationSpecification spec;
 	spec.Name = "Walnut Task Manager";
 
-	Walnut::Application* app = new Walnut::Application(spec);
+	Walnut::Application *app = new Walnut::Application(spec);
 	app->PushLayer<ExampleLayer>();
 	app->SetMenubarCallback([app]()
-	{
+							{
 		if (ImGui::BeginMenu("File"))
 		{
 			if (ImGui::MenuItem("Exit"))
@@ -29,7 +28,6 @@ Walnut::Application* Walnut::CreateApplication(int argc, char** argv)
 				app->Close();
 			}
 			ImGui::EndMenu();
-		}
-	});
+		} });
 	return app;
 }
