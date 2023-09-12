@@ -10,6 +10,7 @@ namespace Helpers
     static void ShowCrudWindow(bool *p_open, CreateTaskModal &modal);
     static void ShowExampleAppLog(bool *p_open);
     bool openTaskPopup = false;
+    Task *demo;
     static void showFullWindows()
     {
         static bool use_work_area = true;
@@ -60,23 +61,47 @@ namespace Helpers
                             {
                                 selected = i;
                                 openTaskPopup = true;
+                                demo = getDemoTask();
                             }
                         }
                         ImGui::EndChild();
                     }
+                    auto popupName = std::string("Task ") + std::to_string(selected);
                     if (openTaskPopup)
                     {
-                        ImGui::OpenPopup("Task Description Popup");
+                        ImGui::OpenPopup(popupName.c_str());
                         openTaskPopup = false;
                     }
-                    if (ImGui::BeginPopup("Task Description Popup"))
+                    if (ImGui::BeginPopupModal(popupName.c_str()))
                     {
                         // TODO: here make the query
                         std::string description = "kdfksdfkdsmfmsdkmf_" + std::to_string(selected);
+                        ImGui::NewLine();
                         ImGui::Text("Task Description:");
-                        ImGui::TextWrapped("%s", description.c_str());
+                        ImGui::TextWrapped("%s", demo->m_description.c_str());
+                        ImGui::NewLine();
+                        ImGui::Text(std::to_string(demo->m_datetime.time_since_epoch().count()).c_str());
+                        ImGui::NewLine();
+                        int int_val = static_cast<int>(demo->m_importance);
+                        int *intp = &int_val;
+                        if (ImGui::RadioButton("Urgent", *intp == static_cast<int>(Importance::Urgent)))
+                        {
+                            demo->m_importance = Importance::Urgent;
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::RadioButton("Important", *intp == static_cast<int>(Importance::Important)))
+                        {
+                            demo->m_importance = Importance::Important;
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::RadioButton("Free time", *intp == static_cast<int>(Importance::FreeTime)))
+                        {
+                            demo->m_importance = Importance::FreeTime;
+                        }
+                        ImGui::NewLine();
                         if (ImGui::Button("OK"))
                         {
+                            delete demo;
                             ImGui::CloseCurrentPopup();
                         }
                         ImGui::EndPopup();

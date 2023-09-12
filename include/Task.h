@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TASK_H
+#define TASK_H
 #include "Utils.h"
 #include <iostream>
 #include <string>
@@ -24,3 +25,11 @@ struct CreateTaskModal
     char descriptionText[512] = "";
     int importanceSelection = -1;
 };
+
+Task *getDemoTask()
+{
+    Task *task = new Task{Status::ToDo, "wash clothes", Importance::Important, {}, std::chrono::system_clock::now()};
+    return task;
+}
+
+#endif // TASK_H
