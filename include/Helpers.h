@@ -2,6 +2,8 @@
 #include <string>
 #include <Walnut/Application.h>
 #include <Task.h>
+#include <sstream>
+#include <iomanip>
 
 namespace Helpers
 {
@@ -11,6 +13,35 @@ namespace Helpers
     static void ShowExampleAppLog(bool *p_open);
     bool openTaskPopup = false;
     Task *demo;
+
+    void RenderTimeSelector(std::time_t& selectedTime) {
+    // Strings to store user input
+    static char dateInput[11] = "dd-mm-yyyy";
+    static char timeInput[9] = "hh:mm:ss";
+
+    ImGui::Text("Select Date and Time:");
+
+    // Input box for date
+    ImGui::InputText("Date (dd-mm-yyyy)", dateInput, sizeof(dateInput));
+
+    ImGui::SameLine();
+
+    // Input box for time
+    ImGui::InputText("Time (hh:mm:ss)", timeInput, sizeof(timeInput));
+
+    // Check if Enter key is pressed (or another validation mechanism) to parse and update the selectedTime
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter))) {
+        std::tm selectedDateTime = {};
+        std::stringstream dateStream(dateInput);
+        std::stringstream timeStream(timeInput);
+        dateStream >> std::get_time(&selectedDateTime, "%d-%m-%Y");
+        timeStream >> std::get_time(&selectedDateTime, "%H:%M:%S");
+
+        if (!dateStream.fail() && !timeStream.fail()) {
+            selectedTime = std::mktime(&selectedDateTime);
+        }
+    }
+}
     static void showFullWindows()
     {
         static bool use_work_area = true;
@@ -99,6 +130,15 @@ namespace Helpers
                             demo->m_importance = Importance::FreeTime;
                         }
                         ImGui::NewLine();
+                        std::time_t timeT = std::chrono::system_clock::to_time_t(demo->m_datetime);
+                        RenderTimeSelector(timeT);
+                        ImGui::NewLine();
+                        if (ImGui::Button("Update"))
+                        {
+                            std::cout<<"kfmdskmfmdskfmdskmf"<<std::endl;
+                            
+                        }
+                        ImGui::SameLine();
                         if (ImGui::Button("OK"))
                         {
                             delete demo;
@@ -116,6 +156,7 @@ namespace Helpers
         }
         ImGui::End();
     }
+
     static void ShowCrudWindow(bool *open, CreateTaskModal &modal)
     {
         if (*open)
@@ -138,7 +179,6 @@ namespace Helpers
                 ImGui::SameLine();
                 ImGui::RadioButton("Free time", &modal.importanceSelection, 2);
                 ImGui::InputTextMultiline("Description", modal.descriptionText, 1024);
-
                 if (ImGui::Button("OK"))
                 {
                     // Close the modal when OK is pressed
